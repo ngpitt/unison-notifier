@@ -51,10 +51,9 @@ namespace unison_notifier
     private Process unisonProcess = new Process();
     private Thread notifierThread;
     private ManualResetEvent notifierResetEvent = new ManualResetEvent(false);
-    private string log;
     private bool terminate = false, firstTimeShown = true;
     private delegate void notifyDelegate(Icon icon, string title, string text);
-    private delegate void updateLogDelegate();
+    private delegate void updateLogDelegate(string line);
     private delegate void clearLogDelegate();
 
     private void notifier()
@@ -78,8 +77,7 @@ namespace unison_notifier
               safeInvoke(new notifyDelegate(notify), Properties.Resources.SyncingIcon, "Syncing", "Unison is syncing files...");
             }
 
-            log = line + Environment.NewLine;
-            safeInvoke(new updateLogDelegate(updateLog));
+            safeInvoke(new updateLogDelegate(updateLog), line + Environment.NewLine);
           }
         }
 
@@ -104,9 +102,9 @@ namespace unison_notifier
       notifyIcon1.BalloonTipText = text;
     }
 
-    private void updateLog()
+    private void updateLog(string line)
     {
-      richTextBox1.AppendText(log);
+      richTextBox1.AppendText(line);
     }
 
     private void clearLog()
