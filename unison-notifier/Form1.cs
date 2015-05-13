@@ -93,15 +93,18 @@ namespace unison_notifier
           {
             return;
           }
-          if (line.Contains("Looking for changes"))
+          if (line != null)
           {
-            notifyIcon1.Icon = Properties.Resources.SyncingIcon;
+            if (line.Contains("Looking for changes"))
+            {
+              notifyIcon1.Icon = Properties.Resources.SyncingIcon;
+            }
+            else if (line.Contains("Nothing to do"))
+            {
+              notifyIcon1.Icon = Properties.Resources.SyncedIcon;
+            }
+            Invoke(new updateStatusDelegate(updateStatus), line + Environment.NewLine);
           }
-          else if (line.Contains("Nothing to do"))
-          {
-            notifyIcon1.Icon = Properties.Resources.SyncedIcon;
-          }
-          Invoke(new updateStatusDelegate(updateStatus), line + Environment.NewLine);
         }
 
         notifyIcon1.Icon = Properties.Resources.ErrorIcon;
