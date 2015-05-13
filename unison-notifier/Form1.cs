@@ -13,14 +13,9 @@ namespace unison_notifier
     public Form1()
     {
       InitializeComponent();
-
-      unisonProcess.StartInfo.FileName = "unison.exe";
-      unisonProcess.StartInfo.RedirectStandardError = true;
-      unisonProcess.StartInfo.UseShellExecute = false;
-      unisonProcess.StartInfo.CreateNoWindow = true;
+      process2.StartInfo.Arguments = Environment.ExpandEnvironmentVariables(@"%HomePath%\.unison\default.prf");
     }
 
-    private Process unisonProcess = new Process();
     private bool firstTimeShown = true;
     private ManualResetEvent manualResetEvent = new ManualResetEvent(false);
     private delegate void updateStatusDelegate(string line);
@@ -28,8 +23,8 @@ namespace unison_notifier
 
     private void Form1_Load(object sender, EventArgs e)
     {
-      backgroundWorker1.RunWorkerAsync();
       Hide();
+      backgroundWorker1.RunWorkerAsync();
     }
 
     private void Form1_Resize(object sender, EventArgs e)
@@ -63,18 +58,15 @@ namespace unison_notifier
 
     private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      string systemRoot = Environment.ExpandEnvironmentVariables("%systemroot%");
-      string homePath = Environment.ExpandEnvironmentVariables("%homepath%");
-
-      Process.Start(systemRoot + "\\System32\\notepad.exe", homePath + "\\.unison\\default.prf");
+      process2.Start();
     }
 
     private void exitToolStripMenuItem_Click(object sender, EventArgs e)
     {
       backgroundWorker1.CancelAsync();
-      if (!unisonProcess.HasExited)
+      if (!process1.HasExited)
       {
-        unisonProcess.Kill();
+        process1.Kill();
       }
       else
       {
@@ -91,11 +83,11 @@ namespace unison_notifier
     {
       while (true)
       {
-        unisonProcess.Start();
+        process1.Start();
 
-        while (!unisonProcess.HasExited)
+        while (!process1.HasExited)
         {
-          string line = unisonProcess.StandardError.ReadLine();
+          string line = process1.StandardError.ReadLine();
 
           if (backgroundWorker1.CancellationPending)
           {

@@ -38,6 +38,8 @@
       this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.richTextBox1 = new System.Windows.Forms.RichTextBox();
       this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+      this.process1 = new System.Diagnostics.Process();
+      this.process2 = new System.Diagnostics.Process();
       this.contextMenuStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -102,6 +104,31 @@
       this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
       this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
       // 
+      // process1
+      // 
+      this.process1.StartInfo.CreateNoWindow = true;
+      this.process1.StartInfo.Domain = "";
+      this.process1.StartInfo.FileName = "unison.exe";
+      this.process1.StartInfo.LoadUserProfile = false;
+      this.process1.StartInfo.Password = null;
+      this.process1.StartInfo.RedirectStandardError = true;
+      this.process1.StartInfo.StandardErrorEncoding = null;
+      this.process1.StartInfo.StandardOutputEncoding = null;
+      this.process1.StartInfo.UserName = "";
+      this.process1.StartInfo.UseShellExecute = false;
+      this.process1.SynchronizingObject = this;
+      // 
+      // process2
+      // 
+      this.process2.StartInfo.Domain = "";
+      this.process2.StartInfo.FileName = "notepad.exe";
+      this.process2.StartInfo.LoadUserProfile = false;
+      this.process2.StartInfo.Password = null;
+      this.process2.StartInfo.StandardErrorEncoding = null;
+      this.process2.StartInfo.StandardOutputEncoding = null;
+      this.process2.StartInfo.UserName = "";
+      this.process2.SynchronizingObject = this;
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -131,6 +158,8 @@
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     private System.ComponentModel.BackgroundWorker backgroundWorker1;
+    private System.Diagnostics.Process process1;
+    private System.Diagnostics.Process process2;
   }
 }
 
