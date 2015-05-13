@@ -36,9 +36,6 @@
       // 
       // notifyIcon1
       // 
-      this.notifyIcon1.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-      this.notifyIcon1.BalloonTipText = "Unison is connecting...";
-      this.notifyIcon1.BalloonTipTitle = "Connecting";
       this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
       this.notifyIcon1.Text = "Unison";
       this.notifyIcon1.Visible = true;
@@ -63,7 +60,7 @@
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "Form1";
       this.ShowInTaskbar = false;
-      this.Text = "Unison";
+      this.Text = "Unison Status";
       this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
       this.ResumeLayout(false);
 

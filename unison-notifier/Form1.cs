@@ -23,13 +23,13 @@ namespace unison_notifier
       FormClosing += new FormClosingEventHandler(Form1_Closing);
 
       ContextMenu contextMenu = new ContextMenu();
-      MenuItem logMenuItem = new MenuItem(),
+      MenuItem statusMenuItem = new MenuItem(),
         settingsMenuItem = new MenuItem(),
         exitMenuItem = new MenuItem();
 
-      logMenuItem.Text = "Log";
-      logMenuItem.Click += new EventHandler(logMenuItem_Click);
-      contextMenu.MenuItems.Add(logMenuItem);
+      statusMenuItem.Text = "Status";
+      statusMenuItem.Click += new EventHandler(statusMenuItem_Click);
+      contextMenu.MenuItems.Add(statusMenuItem);
 
       settingsMenuItem.Text = "Settings";
       settingsMenuItem.Click += new EventHandler(settingsMenuItem_Click);
@@ -41,7 +41,7 @@ namespace unison_notifier
       exitMenuItem.Click += new EventHandler(exitMenuItem_Click);
       contextMenu.MenuItems.Add(exitMenuItem);
 
-      notifyIcon1.MouseClick += new MouseEventHandler(notifyIcon1_MouseClick);
+      notifyIcon1.DoubleClick += new EventHandler(statusMenuItem_Click);
       notifyIcon1.ContextMenu = contextMenu;
 
       notifierThread = new Thread(notifier);
@@ -52,9 +52,8 @@ namespace unison_notifier
     private Thread notifierThread;
     private ManualResetEvent notifierResetEvent = new ManualResetEvent(false);
     private bool terminate = false, firstTimeShown = true;
-    private delegate void notifyDelegate(Icon icon, string title, string text);
-    private delegate void updateLogDelegate(string line);
-    private delegate void clearLogDelegate();
+    private delegate void updateStatusDelegate(string line);
+    private delegate void clearStatusDelegate();
 
     private void notifier()
     {
@@ -65,25 +64,25 @@ namespace unison_notifier
         while (!unisonProcess.HasExited && !terminate)
         {
           string line = unisonProcess.StandardError.ReadLine();
-          
+
           if (line != null)
           {
-            if (line.Contains("Nothing to do"))
+            if (line.Contains("Looking for changes"))
             {
-              safeInvoke(new notifyDelegate(notify), Properties.Resources.SyncedIcon, "Synced", "Unison is connected and synced.");
+              notifyIcon1.Icon = Properties.Resources.SyncingIcon;
             }
-            else if (line.Contains("Propagating updates"))
+            else if (line.Contains("Nothing to do"))
             {
-              safeInvoke(new notifyDelegate(notify), Properties.Resources.SyncingIcon, "Syncing", "Unison is syncing files...");
+              notifyIcon1.Icon = Properties.Resources.SyncedIcon;
             }
 
-            safeInvoke(new updateLogDelegate(updateLog), line + Environment.NewLine);
+            safeInvoke(new updateStatusDelegate(updateStatus), line + Environment.NewLine);
           }
         }
 
-        safeInvoke(new notifyDelegate(notify), Properties.Resources.ErrorIcon, "Disconnected", "Unison has lost connection.");
+        notifyIcon1.Icon = Properties.Resources.ErrorIcon;
         notifierResetEvent.WaitOne(10000);
-        safeInvoke(new clearLogDelegate(clearLog));
+        safeInvoke(new clearStatusDelegate(clearStatus));
       }
     }
 
@@ -95,24 +94,17 @@ namespace unison_notifier
       }
     }
 
-    private void notify(Icon icon, string title, string text)
-    {
-      notifyIcon1.Icon = icon;
-      notifyIcon1.BalloonTipTitle = title;
-      notifyIcon1.BalloonTipText = text;
-    }
-
-    private void updateLog(string line)
+    private void updateStatus(string line)
     {
       richTextBox1.AppendText(line);
     }
 
-    private void clearLog()
+    private void clearStatus()
     {
       richTextBox1.Clear();
     }
 
-    private void logMenuItem_Click(object sender, EventArgs e)
+    private void statusMenuItem_Click(object sender, EventArgs e)
     {
       if (firstTimeShown)
       {
@@ -138,14 +130,6 @@ namespace unison_notifier
     {
       terminate = true;
       Close();
-    }
-
-    private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
-    {
-      if (e.Button == MouseButtons.Left)
-      {
-        notifyIcon1.ShowBalloonTip(5000);
-      }
     }
 
     private void Form1_Load(object sender, EventArgs e)
