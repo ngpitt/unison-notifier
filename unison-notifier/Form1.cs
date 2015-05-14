@@ -28,12 +28,6 @@ namespace unison_notifier
       backgroundWorker.RunWorkerAsync();
     }
 
-    private void Form1_Resize(object sender, EventArgs e)
-    {
-      statusRichTextBox.Width = Width - 63;
-      statusRichTextBox.Height = Height - 108;
-    }
-
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
       if (backgroundWorker.IsBusy)
@@ -97,23 +91,23 @@ namespace unison_notifier
 
         while (!unisonProcess.HasExited)
         {
-          string line = unisonProcess.StandardError.ReadLine();
+          string output = unisonProcess.StandardError.ReadLine();
 
           if (backgroundWorker.CancellationPending)
           {
             return;
           }
-          if (line != null)
+          if (output != null)
           {
-            if (line.Contains("Looking for changes"))
+            if (output.Contains("Looking for changes"))
             {
               Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.SyncingIcon, "Syncing");
             }
-            else if (line.Contains("Nothing to do"))
+            else if (output.Contains("Nothing to do"))
             {
               Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.SyncedIcon, "Synced");
             }
-            Invoke(new updateLogDelegate(updateLog), line + Environment.NewLine);
+            Invoke(new updateLogDelegate(updateLog), output + Environment.NewLine);
           }
         }
 
@@ -138,9 +132,9 @@ namespace unison_notifier
       statusLabel.Text = "Status: " + status;
     }
 
-    private void updateLog(string line)
+    private void updateLog(string output)
     {
-      statusRichTextBox.AppendText(line);
+      statusRichTextBox.AppendText(output);
     }
 
     private void clearLog()

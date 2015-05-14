@@ -93,6 +93,9 @@
       // 
       // statusRichTextBox
       // 
+      this.statusRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
       this.statusRichTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight;
       this.statusRichTextBox.Location = new System.Drawing.Point(19, 26);
       this.statusRichTextBox.Margin = new System.Windows.Forms.Padding(10, 5, 10, 5);
@@ -136,11 +139,13 @@
       // 
       // reconnectButton
       // 
+      this.reconnectButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.reconnectButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.reconnectButton.Location = new System.Drawing.Point(144, 312);
       this.reconnectButton.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
       this.reconnectButton.Name = "reconnectButton";
       this.reconnectButton.Size = new System.Drawing.Size(110, 23);
-      this.reconnectButton.TabIndex = 1;
+      this.reconnectButton.TabIndex = 2;
       this.reconnectButton.Text = "Reconnect";
       this.reconnectButton.UseVisualStyleBackColor = true;
       this.reconnectButton.Click += new System.EventHandler(this.reconnectButton_Click);
@@ -152,11 +157,13 @@
       this.statusLabel.Margin = new System.Windows.Forms.Padding(0);
       this.statusLabel.Name = "statusLabel";
       this.statusLabel.Size = new System.Drawing.Size(97, 13);
-      this.statusLabel.TabIndex = 2;
+      this.statusLabel.TabIndex = 4;
       this.statusLabel.Text = "Status: Connecting";
       // 
       // hideButton
       // 
+      this.hideButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.hideButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.hideButton.Location = new System.Drawing.Point(439, 312);
       this.hideButton.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
       this.hideButton.Name = "hideButton";
@@ -168,11 +175,13 @@
       // 
       // disconnectButton
       // 
+      this.disconnectButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.disconnectButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.disconnectButton.Location = new System.Drawing.Point(19, 312);
       this.disconnectButton.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
       this.disconnectButton.Name = "disconnectButton";
       this.disconnectButton.Size = new System.Drawing.Size(110, 23);
-      this.disconnectButton.TabIndex = 4;
+      this.disconnectButton.TabIndex = 1;
       this.disconnectButton.Text = "Disconnect";
       this.disconnectButton.UseVisualStyleBackColor = true;
       this.disconnectButton.Click += new System.EventHandler(this.disconnectButton_Click);
@@ -188,13 +197,13 @@
       this.Controls.Add(this.reconnectButton);
       this.Controls.Add(this.statusRichTextBox);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.MinimumSize = new System.Drawing.Size(425, 150);
       this.Name = "statusForm";
       this.ShowInTaskbar = false;
       this.Text = "Unison";
       this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
       this.Load += new System.EventHandler(this.Form1_Load);
-      this.Resize += new System.EventHandler(this.Form1_Resize);
       this.notifyIconContextMenuStrip.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
