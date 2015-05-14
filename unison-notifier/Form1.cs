@@ -8,34 +8,35 @@ using System.Drawing;
 
 namespace unison_notifier
 {
-  public partial class Form1 : Form
+  public partial class statusForm : Form
   {
-    public Form1()
+    public statusForm()
     {
       InitializeComponent();
-      process2.StartInfo.Arguments = Environment.ExpandEnvironmentVariables(@"%HomePath%\.unison\default.prf");
+      notepadProcess.StartInfo.Arguments = Environment.ExpandEnvironmentVariables(@"%HomePath%\.unison\default.prf");
     }
 
     private bool firstTimeShown = true;
     private ManualResetEvent manualResetEvent = new ManualResetEvent(false);
-    private delegate void updateStatusDelegate(string line);
-    private delegate void clearStatusDelegate();
+    private delegate void updateStatusDelegate(Icon icon, string status);
+    private delegate void updateLogDelegate(string line);
+    private delegate void clearLogDelegate();
 
     private void Form1_Load(object sender, EventArgs e)
     {
       Hide();
-      backgroundWorker1.RunWorkerAsync();
+      backgroundWorker.RunWorkerAsync();
     }
 
     private void Form1_Resize(object sender, EventArgs e)
     {
-      richTextBox1.Width = Width - 40;
-      richTextBox1.Height = Height - 63;
+      statusRichTextBox.Width = Width - 63;
+      statusRichTextBox.Height = Height - 108;
     }
 
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
-      if (backgroundWorker1.IsBusy)
+      if (backgroundWorker.IsBusy)
       {
         Hide();
         e.Cancel = true;
@@ -44,34 +45,26 @@ namespace unison_notifier
 
     private void statusToolStripMenuItem_Click(object sender, EventArgs e)
     {
+      statusRichTextBox.SelectionStart = statusRichTextBox.Text.Length;
+      statusRichTextBox.ScrollToCaret();
       if (firstTimeShown)
       {
-        firstTimeShown = false;
         WindowState = FormWindowState.Normal;
         ShowInTaskbar = true;
         CenterToScreen();
+        firstTimeShown = false;
       }
-      richTextBox1.SelectionStart = richTextBox1.Text.Length;
-      richTextBox1.ScrollToCaret();
       Show();
     }
 
     private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      process2.Start();
+      notepadProcess.Start();
     }
 
     private void exitToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      backgroundWorker1.CancelAsync();
-      if (!process1.HasExited)
-      {
-        process1.Kill();
-      }
-      else
-      {
-        manualResetEvent.Set();
-      }
+      exitBackgroundWorker(true);
     }
 
     private void notifyIcon1_DoubleClick(object sender, EventArgs e)
@@ -79,17 +72,34 @@ namespace unison_notifier
       statusToolStripMenuItem_Click(sender, e);
     }
 
+    private void disconnectButton_Click(object sender, EventArgs e)
+    {
+      exitBackgroundWorker(true);
+    }
+
+    private void reconnectButton_Click(object sender, EventArgs e)
+    {
+      exitBackgroundWorker(false);
+    }
+
+    private void hideButton_Click(object sender, EventArgs e)
+    {
+      Close();
+    }
+
     private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
     {
       while (true)
       {
-        process1.Start();
+        unisonProcess.Start();
+        Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.UnisonIcon, "Connecting");
+        manualResetEvent.Reset();
 
-        while (!process1.HasExited)
+        while (!unisonProcess.HasExited)
         {
-          string line = process1.StandardError.ReadLine();
+          string line = unisonProcess.StandardError.ReadLine();
 
-          if (backgroundWorker1.CancellationPending)
+          if (backgroundWorker.CancellationPending)
           {
             return;
           }
@@ -97,23 +107,23 @@ namespace unison_notifier
           {
             if (line.Contains("Looking for changes"))
             {
-              notifyIcon1.Icon = Properties.Resources.SyncingIcon;
+              Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.SyncingIcon, "Syncing");
             }
             else if (line.Contains("Nothing to do"))
             {
-              notifyIcon1.Icon = Properties.Resources.SyncedIcon;
+              Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.SyncedIcon, "Synced");
             }
-            Invoke(new updateStatusDelegate(updateStatus), line + Environment.NewLine);
+            Invoke(new updateLogDelegate(updateLog), line + Environment.NewLine);
           }
         }
 
-        notifyIcon1.Icon = Properties.Resources.ErrorIcon;
+        Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.ErrorIcon, "Disconnected");
         manualResetEvent.WaitOne(10000);
-        if (backgroundWorker1.CancellationPending)
+        if (backgroundWorker.CancellationPending)
         {
           return;
         }
-        Invoke(new clearStatusDelegate(clearStatus));
+        Invoke(new clearLogDelegate(clearLog));
       }
     }
 
@@ -122,14 +132,33 @@ namespace unison_notifier
       Close();
     }
 
-    private void updateStatus(string line)
+    private void updateStatus(Icon icon, string status)
     {
-      richTextBox1.AppendText(line);
+      notifyIcon.Icon = icon;
+      statusLabel.Text = "Status: " + status;
     }
 
-    private void clearStatus()
+    private void updateLog(string line)
     {
-      richTextBox1.Clear();
+      statusRichTextBox.AppendText(line);
+    }
+
+    private void clearLog()
+    {
+      statusRichTextBox.Clear();
+    }
+
+    private void exitBackgroundWorker(bool restart)
+    {
+      if (restart)
+      {
+        backgroundWorker.CancelAsync();
+      }
+      if (!unisonProcess.HasExited)
+      {
+        unisonProcess.Kill();
+      }
+      manualResetEvent.Set();
     }
   }
 }
