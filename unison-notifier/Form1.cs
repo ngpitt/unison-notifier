@@ -13,7 +13,8 @@ namespace unison_notifier
     public statusForm()
     {
       InitializeComponent();
-      notepadProcess.StartInfo.Arguments = Environment.ExpandEnvironmentVariables(@"%HomePath%\.unison\default.prf");
+      notepadProcess.StartInfo.Arguments =
+        Environment.ExpandEnvironmentVariables(@"%HomePath%\.unison\default.prf");
     }
 
     private bool firstTimeShown = true;
@@ -41,6 +42,7 @@ namespace unison_notifier
     {
       statusRichTextBox.SelectionStart = statusRichTextBox.Text.Length;
       statusRichTextBox.ScrollToCaret();
+
       if (firstTimeShown)
       {
         WindowState = FormWindowState.Normal;
@@ -48,6 +50,7 @@ namespace unison_notifier
         CenterToScreen();
         firstTimeShown = false;
       }
+
       Show();
     }
 
@@ -86,7 +89,11 @@ namespace unison_notifier
       while (true)
       {
         unisonProcess.Start();
-        Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.UnisonIcon, "Connecting");
+
+        Invoke(
+          new updateStatusDelegate(updateStatus),
+          Properties.Resources.UnisonIcon,
+          "Connecting");
         manualResetEvent.Reset();
 
         while (!unisonProcess.HasExited)
@@ -101,27 +108,41 @@ namespace unison_notifier
           {
             if (output.Contains("Looking for changes"))
             {
-              Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.SyncingIcon, "Syncing");
+              Invoke(
+                new updateStatusDelegate(updateStatus),
+                Properties.Resources.SyncingIcon,
+                "Syncing");
             }
             else if (output.Contains("Nothing to do"))
             {
-              Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.SyncedIcon, "Synced");
+              Invoke(
+                new updateStatusDelegate(updateStatus),
+                Properties.Resources.SyncedIcon,
+                "Synced");
             }
+
             Invoke(new updateLogDelegate(updateLog), output + Environment.NewLine);
           }
         }
 
-        Invoke(new updateStatusDelegate(updateStatus), Properties.Resources.ErrorIcon, "Disconnected");
+        Invoke(
+          new updateStatusDelegate(updateStatus),
+          Properties.Resources.ErrorIcon,
+          "Disconnected");
+
         manualResetEvent.WaitOne(10000);
+
         if (backgroundWorker.CancellationPending)
         {
           return;
         }
+
         Invoke(new clearLogDelegate(clearLog));
       }
     }
 
-    private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+    private void backgroundWorker1_RunWorkerCompleted(
+      object sender, RunWorkerCompletedEventArgs e)
     {
       Close();
     }
@@ -148,10 +169,12 @@ namespace unison_notifier
       {
         backgroundWorker.CancelAsync();
       }
+
       if (!unisonProcess.HasExited)
       {
         unisonProcess.Kill();
       }
+
       manualResetEvent.Set();
     }
   }
