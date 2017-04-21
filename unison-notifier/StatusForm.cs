@@ -60,7 +60,6 @@ namespace UnisonNotifier
                 }
                 else
                 {
-                    FreeConsole();
                     SetConsoleCtrlHandler(null, false);
                 }
 
